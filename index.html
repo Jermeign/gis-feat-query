@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://bootswatch.com/4/slate/bootstrap.min.css"
+    />
+
+    <link rel="stylesheet" href="css/style.css" />
+    <title>GIS Feature Query</title>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">CM Asset Inventory Manager</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarColor02"
+        aria-controls="navbarColor02"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarColor02">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#"
+              >Home <span class="sr-only">(current)</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Pricing</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <input
+            class="form-control mr-sm-2"
+            type="text"
+            placeholder="Search"
+          />
+          <button class="btn btn-secondary my-2 my-sm-0" type="submit">
+            Search
+          </button>
+        </form>
+      </div>
+    </nav>
+    <div class="page-grid">
+      <div class="jumbotron page-content-div" id="page-content-div">
+        <h2>Query GIS Feautures</h2>
+        <!-- Query Form -->
+        <div class="container form-div mt-5" id="form-div">
+          <form method="GET" enctype="multipart/form-data">
+            <fieldset>
+              <!-- System Owner Select Group-->
+              <div class="form-group">
+                <label for="owner-select">Select System Owner:</label>
+                <select class="form-control" id="owner-select">
+                  <option value="-1">-- Select One --</option>
+                </select>
+              </div>
+              <!-- Feature Layer Select Group-->
+              <div class="form-group">
+                <label for="feature-select">Select Feature to Query:</label>
+                <select class="form-control" id="feature-select">
+                  <option value="-1">-- Select One --</option>
+                </select>
+              </div>
+
+              <!-- Radio Button Group -->
+              <div class="form-group row mt-4" id="input-method">
+                <div class="custom-control custom-radio mr-5 mb-3">
+                  <input
+                    type="radio"
+                    name="check"
+                    id="manual-radio"
+                    class="custom-control-input"
+                    checked=""
+                  />
+                  <label for="manual-radio" class="custom-control-label"
+                    >Input Filter Manually</label
+                  >
+                </div>
+                <div class="custom-control custom-radio">
+                  <input
+                    type="radio"
+                    name="check"
+                    id="upload-radio"
+                    class="custom-control-input"
+                  />
+                  <label for="upload-radio" class="custom-control-label"
+                    >Upload File</label
+                  >
+                </div>
+              </div>
+              <div class="form-group" id="manual-input">
+                <label for="manual-input-textarea" class="form-label"
+                  >Input Valid SQL Query String:</label
+                >
+                <textarea
+                  name="manual-input-textarea"
+                  id="manual-input-textarea"
+                  cols="30"
+                  rows="5"
+                  class="form-control"
+                  disabled=""
+                ></textarea>
+              </div>
+              <input
+                type="submit"
+                value="Submit"
+                class="btn btn-outline-primary btn-block mt-5"
+                id="manual-submit-btn"
+              />
+              <div class="form-group mt-5" id="file-input">
+                <label
+                  for="query-file-input"
+                  class="btn btn-outline-primary"
+                  id="file-input-label"
+                  disabled=""
+                  >Browse File(s)
+                  <input
+                    type="file"
+                    name=""
+                    id="query-file-input"
+                    disabled=""
+                  />
+                </label>
+                <div class="selected-file-div">
+                  <span id="selected-file"></span>
+                  <p id="selected-file-valid"></p>
+                </div>
+                <!-- <div class="input-group">
+                  <div class="custom-file" id="file-input-textarea">
+                    <input
+                      type="file"
+                      name=""
+                      id="query-file-input"
+                      class="custom-file-input"
+                      disabled=""
+                    />
+                    <label
+                      for="query-file-input"
+                      class="custom-file-label ml-1"
+                      id="file-input-label"
+                      >Choose File</label
+                    >
+                  </div>
+                </div> -->
+              </div>
+              <input
+                type="submit"
+                value="Upload"
+                class="btn btn-outline-primary btn-block mt-5"
+                id="submit-btn"
+                disabled=""
+              />
+              <div class="form-group mt-5" id="input-headers-group">
+                <label for="input-headers-sel"
+                  >Select Field for Query Values:</label
+                >
+                <select class="form-control" id="input-headers-sel" disabled="">
+                  <option>ObjectID</option>
+                  <option>ID</option>
+                  <option>USMH</option>
+                  <option>DSMH</option>
+                  <option>Length</option>
+                </select>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+      <div class="jumbotron results-div" id="results-div">
+        <h2 class="mt-5 mb-5">Query Results</h2>
+      </div>
+    </div>
+
+    <!-- MH Details Modal -->
+    <div class="modal fade" id="mh-details-modal">
+      <div
+        class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
+        role="document"
+      >
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-title"></h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="modal-body">
+            <table class="table table-dark">
+              <tr>
+                <td>OBJECTID:</td>
+                <td id="modal-objid"></td>
+              </tr>
+              <tr>
+                <td>ID:</td>
+                <td id="modal-id"></td>
+              </tr>
+              <tr>
+                <td>Address:</td>
+                <td id="modal-addr"></td>
+              </tr>
+              <tr>
+                <td>Install Date:</td>
+                <td id="modal-inst-date"></td>
+              </tr>
+              <tr>
+                <td>MH Depth:</td>
+                <td id="modal-depth"></td>
+              </tr>
+              <tr>
+                <td>MH Diameter:</td>
+                <td id="modal-diameter"></td>
+              </tr>
+              <tr>
+                <td>Easting:</td>
+                <td id="modal-east"></td>
+              </tr>
+              <tr>
+                <td>Northing:</td>
+                <td id="modal-north"></td>
+              </tr>
+              <tr>
+                <td>Surface Type:</td>
+                <td id="modal-surface"></td>
+              </tr>
+              <tr>
+                <td>Ground Elevation:</td>
+                <td id="modal-grnd-elev"></td>
+              </tr>
+              <tr>
+                <td>Rim Elevation:</td>
+                <td id="modal-rim-elev"></td>
+              </tr>
+              <tr>
+                <td>Created By:</td>
+                <td id="modal-created-by"></td>
+              </tr>
+              <tr>
+                <td>Created On:</td>
+                <td id="modal-created-date"></td>
+              </tr>
+              <tr>
+                <td>Last Edited By:</td>
+                <td id="modal-last-edited-by"></td>
+              </tr>
+              <tr>
+                <td>Last Edited On:</td>
+                <td id="modal-last-edited-date"></td>
+              </tr>
+              <tr>
+                <td>Remarks:</td>
+                <td id="modal-remarks"></td>
+              </tr>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary">
+              Save changes
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"
+    ></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="script.js"></script>
+    <script src="input.js"></script>
+  </body>
+</html>
